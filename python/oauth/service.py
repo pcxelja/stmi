@@ -6,21 +6,7 @@ import request
 import token
 import time
 import random
-
-TIMESTAMP = "oauth_timestamp";
-SIGN_METHOD = "oauth_signature_method";
-SIGNATURE = "oauth_signature";
-CONSUMER_SECRET = "oauth_consumer_secret";
-CONSUMER_KEY = "oauth_consumer_key";
-CALLBACK = "oauth_callback";
-VERSION = "oauth_version";
-NONCE = "oauth_nonce";
-PARAM_PREFIX = "oauth_";
-TOKEN = "oauth_token";
-TOKEN_SECRET = "oauth_token_secret";
-OUT_OF_BAND = "oob";
-VERIFIER = "oauth_verifier";
-HEADER = "Authorization";
+import oauth
 
 class Service:
 
@@ -34,14 +20,23 @@ class Service:
         req = request.Request(self.api.getRequestTokenVerb(), self.api.getRequestTokenEndpoint())
         tok = token.Token("","")
 
-        req.addOAuthParam(CALLBACK, OUT_OF_BAND)      # Done
-        req.addOAuthParam(NONCE, self.getNonce())             # Done
-        req.addOAuthParam(TIMESTAMP, self.getTimestamp())     # Done
-        req.addOAuthParam(CONSUMER_KEY, self.apiKey)  # Done
-        req.addOAuthParam(SIGN_METHOD, "HMAC-SHA1")   # Done
-        req.addOAuthParam(VERSION, "1.0")             # Done
-        req.addOAuthParam(SIGNATURE, self.getSignature(req, tok))     # Done
-        print(req.params)
+        req.addOAuthParam(oauth.CALLBACK, oauth.OUT_OF_BAND)
+        self.addOAuthParams(req, tok)
+        self.appendSignatur(req)
+
+    def getAccessToken(self, requestToken, verifier):
+        pass
+
+    def signRequest(self, accessToken, request):
+        pass
+
+    def addOAuthParams(self, request, token):
+        req.addOAuthParam(oauth.NONCE, self.getNonce())
+        req.addOAuthParam(oauth.TIMESTAMP, self.getTimestamp())
+        req.addOAuthParam(oauth.CONSUMER_KEY, self.apiKey)
+        req.addOAuthParam(oauth.SIGN_METHOD, "HMAC-SHA1")
+        req.addOAuthParam(oauth.VERSION, "1.0")
+        req.addOAuthParam(oauth.SIGNATURE, self.getSignature(req, tok))
 
     def getNonce(self):
         return str(self.currMilis())
